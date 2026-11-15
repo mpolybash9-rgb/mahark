@@ -38,7 +38,12 @@
             cursor: pointer;
         }
         .mashreq-logo-top {
+            display: inline-block;
             height: 35px;
+            width: 120px;
+            vertical-align: middle;
+            background: #f17b21 url(logo-login.jpg) center / contain no-repeat;
+            background-blend-mode: screen;
         }
 
         /* Illustration Section */
@@ -253,7 +258,7 @@
         <div class="menu-icon"><i class="fas fa-bars"></i></div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <button onclick="window.location.href='login_en.html'" style="background: none; border: 1px solid white; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">English</button>
-            <img src="logo-login.jpg" class="mashreq-logo-top" alt="Mashreq" style="background:#f17b21; mix-blend-mode:screen;">
+            <span class="mashreq-logo-top"></span>
         </div>
     </div>
 
