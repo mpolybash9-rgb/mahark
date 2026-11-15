@@ -37,8 +37,14 @@
             font-size: 24px;
             cursor: pointer;
         }
+        .logo-wrap {
+            display: inline-flex;
+            background-color: #f17b21;
+            border-radius: 4px;
+        }
         .mashreq-logo-top {
             height: 35px;
+            mix-blend-mode: multiply;
         }
 
         /* Illustration Section */
@@ -253,7 +259,7 @@
         <div class="menu-icon"><i class="fas fa-bars"></i></div>
         <div style="display: flex; align-items: center; gap: 15px;">
             <button onclick="window.location.href='login_en.html'" style="background: none; border: 1px solid white; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold;">English</button>
-            <img src="logo.jpg" class="mashreq-logo-top" alt="Mashreq">
+            <span class="logo-wrap"><img src="logo.jpg" class="mashreq-logo-top" alt="Mashreq"></span>
         </div>
     </div>
 
