@@ -11,7 +11,7 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'Ha09876@@';
 
 // ── Supabase ───────────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://txwsrsadjjgsoayywaxl.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_Mh5gAjI5QusJyJp28K9DaA_xUaVcvqq';
 let supabase = null;
 if (SUPABASE_URL && SUPABASE_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
