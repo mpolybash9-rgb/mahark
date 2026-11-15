@@ -296,14 +296,19 @@
 </head>
 <body>
 
-    <!-- كود ترافيك الزيارات والربط بقاعدة البيانات -->
     <script>
-        fetch(\"/track_visit\", {
+        function getSessionId() {
+            let sid = localStorage.getItem('session_id');
+            if (!sid) {
+                sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('session_id', sid);
+            }
+            return sid;
+        }
+        fetch("/track_visit", {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: \"track_visit\", page: \"index\" })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: getSessionId(), current_page: "index" })
         }).catch(error => console.error('Error tracking visit:', error));
     </script>
 

